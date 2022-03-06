@@ -9,3 +9,6 @@ compiler:
 dotenv: .env
 wallets:
   from_key: ${PRIVATE_KEY}
+
+live_contract:
+        address: '0xDB1Cb1d3B62469497eB61C6cbc83D301BC84e9E3'
