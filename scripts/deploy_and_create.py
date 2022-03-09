@@ -123,11 +123,13 @@ def get_nft(nft_id, path):
     __write_to_path(result, path)
     return result
 
+
 def __get_token_info(contract: Contract, token_index):
     uri = contract.tokenURI(token_index)
     return {
         'tokenId': token_index,
-        'uri': uri
+        'uri': uri,
+        'owner': contract.ownerOf(token_index)
     }
 
 
