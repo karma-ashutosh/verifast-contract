@@ -1,16 +1,16 @@
 import json
 
+from brownie.network.account import LocalAccount
+
 from scripts.helpful_scripts import get_account, OPENSEA_URL
 from brownie import SimpleCollectible
-from brownie import accounts, network, config, Contract
-from brownie.convert.datatypes import Wei
+from brownie import accounts, config, Contract
+from brownie.network.transaction import TransactionReceipt
 
 sample_token_uri = "https://ipfs.io/ipfs/Qmd9MCGtdVz2miNumBHDbvj8bigSgTwnr4SbyH6DNnpWdt?filename=0-PUG.json"
 
 
-
 def deploy_and_create():
-
     account = get_account()
     simple_collectible = SimpleCollectible.deploy({"from": account})
     tx = simple_collectible.createCollectible(sample_token_uri, {"from": account})
@@ -21,40 +21,15 @@ def deploy_and_create():
     print("Please wait up to 20 minutes, and hit the refresh metadata button. ")
     return simple_collectible
 
-def get_nft_count(username, password):
-    contract = __get_deployed()
-    account = accounts.load(username, password=password)
-    return contract.balanceOf(account.address)
 
-def get_all_nfts(username, password):
-    contract = __get_deployed()
+def account_details(username, password, path):
     account = accounts.load(username, password=password)
-    count = contract.balanceOf(account.address)
-    result = []
-    for index in range(count):
-        token = contract.tokenOfOwnerByIndex(account.addres, i)
-        result.append(token)
+    result = {
+        'address': account.address,
+    }
+    __write_to_path(result, path)
     return result
 
-def transfer_nft(username, password, nft_id, to_address):
-    contract = __get_deployed()
-    account = accounts.load(username, password=password)
-    contract.approve(to_address, {'from': account.address})
-    return "done"
-
-def claim_approved(username, password, nft_id, approver):
-    contract = __get_deployed()
-    account = accounts.load(username, password=password)
-    contract.transferFrom(approver, account.address, nft_id, {'from': account.address})
-    return "done"
-
-
-def create_nft(username, password):
-    contract = __get_deployed()
-    account = accounts.load(username, password=password)
-    tx = contract.createCollectible(sample_token_uri, {"from": account.address})
-    tx.wait(1)
-    return tx.events['Transfer']
 
 def transfer_fund(username, password, to, amount, path):
     account = accounts.load(username, password=password)
@@ -71,16 +46,93 @@ def transfer_fund(username, password, to, amount, path):
     return "done"
 
 
-def account_details(username, password, path):
+def create_nft(username, password, path):
+    contract = __get_deployed()
     account = accounts.load(username, password=password)
+    tx = contract.createCollectible(sample_token_uri, {"from": account.address})
+    tx.wait(1)
+    transfer_details = tx.events['Transfer']
     result = {
-        'address': account.address,
+        'from': transfer_details['from'],
+        'to': transfer_details['to'],
+        'tokenId': transfer_details['tokenId']
     }
     __write_to_path(result, path)
     return result
 
-def __get_deployed(contract_address=None):
-    address = config['live_contract']['address'] if not contract_address else contract_address 
+
+def transfer_nft(username, password, nft_id, to_address, path):
+    contract = __get_deployed()
+    account = accounts.load(username, password=password)
+    tr = contract.approve(to_address, nft_id, {'from': account.address})
+    tr.wait(1)
+    result = {
+        'from': account.address,
+        'to': to_address,
+        'nft_id': nft_id,
+        'action': 'approved'
+    }
+    __write_to_path(result, path)
+    return result
+
+
+def claim_approved(username, password, nft_id, approver, path):
+    contract = __get_deployed()
+    account = accounts.load(username, password=password)
+    tr: TransactionReceipt = contract.transferFrom(approver, account.address, nft_id, {'from': account.address})
+    tr.wait(1)
+    result = {
+        'from': approver,
+        'to': account.address,
+        'nft_id': nft_id,
+        'action': 'claimed'
+    }
+    __write_to_path(result, path)
+    return result
+
+
+def get_nft_count(username, password, path):
+    contract = __get_deployed()
+    account: LocalAccount = accounts.load(username, password=password)
+    result = {
+        'count': contract.balanceOf(account.address)
+    }
+    __write_to_path(result, path)
+    return result
+
+
+def get_all_nfts(username, password, path):
+    contract = __get_deployed()
+    account = accounts.load(username, password=password)
+    count = contract.balanceOf(account.address)
+    result = []
+    for index in range(count):
+        token = contract.tokenOfOwnerByIndex(account.addres, index)
+        result.append(__get_token_info(contract, token))
+    result = {
+        'username': username,
+        'all_nfts': result
+    }
+    __write_to_path(result, path)
+    return result
+
+
+def get_nft(nft_id, path):
+    contract = __get_deployed()
+    result = __get_token_info(contract, nft_id)
+    __write_to_path(result, path)
+    return result
+
+def __get_token_info(contract: Contract, token_index):
+    uri = contract.tokenURI(token_index)
+    return {
+        'tokenId': token_index,
+        'uri': uri
+    }
+
+
+def __get_deployed(contract_address=None) -> Contract:
+    address = config['live_contract']['address'] if not contract_address else contract_address
     c = Contract.from_abi("SimpleCollectible", address, SimpleCollectible.abi)
     return c
 
@@ -90,6 +142,7 @@ def __write_to_path(result, path):
         f = open(path, 'w')
         f.write(json.dumps(result))
         f.close()
+
 
 def main():
     deploy_and_create()
