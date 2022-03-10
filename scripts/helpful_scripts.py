@@ -45,4 +45,5 @@ def get_contract(contract_name):
 # add contracts as they are needed.
 def deploy_mocks():
     account = get_account()
+    simple_collectible =  SimpleCollectible.deploy({"from": account})
     print("Mocks Deployed!")

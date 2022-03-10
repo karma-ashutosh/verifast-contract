@@ -24,7 +24,8 @@ def create_metadata(
         collectible_metadata["image"] = image_uri
         with open(metadata_filepath, "w") as file:
             json.dump(collectible_metadata, file)
-        upload_to_ipfs(metadata_filepath, metadata_filename)
+        json_uri = upload_to_ipfs(metadata_filepath, metadata_filename)
+        return json_uri
 
 
 # def main():
@@ -32,4 +33,4 @@ def create_metadata(
 #     filepath = "./img/pug.png"
 #     filename = filepath.split("/")[-1:][0]
 
-#     create_metadata(0, "puma", "superfast", "superfast shoes", filepath, filename)
+#     create_metadata(0, "pugsandpugs", "pug", "a cute pug!!", filepath, filename)
