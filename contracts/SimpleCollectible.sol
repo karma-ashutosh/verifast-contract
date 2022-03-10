@@ -7,12 +7,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract SimpleCollectible is ERC721, Ownable {
     uint256 public tokenCounter;
 
-    constructor() public ERC721("PUG NFT", "PUG") {
+    constructor() public ERC721("Simple Collectible", "SCB") {
         tokenCounter = 0;
     }
 
     function createCollectible(string memory tokenURI)
-        public onlyOwner
+        public
+        onlyOwner
         returns (uint256)
     {
         uint256 newTokenId = tokenCounter;

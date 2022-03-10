@@ -27,9 +27,9 @@ def create_metadata(
         upload_to_ipfs(metadata_filepath, metadata_filename)
 
 
-def main():
-    # Change this filepath
-    filepath = "./img/pug.png"
-    filename = filepath.split("/")[-1:][0]
+# def main():
+#     # Change this filepath
+#     filepath = "./img/pug.png"
+#     filename = filepath.split("/")[-1:][0]
 
-    create_metadata(0, "puma", "superfast", "superfast shoes", filepath, filename)
+#     create_metadata(0, "puma", "superfast", "superfast shoes", filepath, filename)
