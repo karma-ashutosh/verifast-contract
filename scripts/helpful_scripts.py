@@ -1,7 +1,7 @@
 from brownie import accounts, network, config, Contract
 
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development", "ganache", "ganache-local"]
-FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
+FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork"]
 
 OPENSEA_URL = "https://testnets.opensea.io/assets/{}/{}"
 
