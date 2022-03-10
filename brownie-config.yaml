@@ -16,6 +16,7 @@ networks:
   development:
     verify: False
   rinkeby:
+    simple_collectible: '0x41f70a6b5FA43a31116C19eb4EaFF09d1B3fa983'
     verify: False
   mainnet-fork:
     verify: False

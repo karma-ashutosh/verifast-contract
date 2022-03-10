@@ -1,4 +1,5 @@
 from brownie import accounts, network, config, Contract
+from brownie import SimpleCollectible
 
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development", "ganache", "ganache-local"]
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork"]
@@ -19,7 +20,7 @@ def get_account(index=None, id=None):
     return accounts.add(config["wallets"]["from_key"])
 
 
-contract_to_contract_type = {}
+contract_to_contract_type = {"simple_collectible": SimpleCollectible}
 
 
 def get_contract(contract_name):
