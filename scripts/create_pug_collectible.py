@@ -14,7 +14,7 @@ def create_sample_collectible(metadata_uri=None):
         )
         print(metadata_uri)
 
-    # https://testnets.opensea.io/assets/0x41f70a6b5FA43a31116C19eb4EaFF09d1B3fa983/0
+    # https://testnets.opensea.io/assets/0x41f70a6b5FA43a31116C19eb4EaFF09d1B3fa983/1
     tx = simple_collectible.createCollectible(metadata_uri, {"from": account})
     tx.wait(1)
     print(
@@ -22,6 +22,14 @@ def create_sample_collectible(metadata_uri=None):
     )
     print("Please wait up to 20 minutes, and hit the refresh metadata button. ")
     return simple_collectible
+
+
+# def check_collectibles():
+#     account = get_account()
+#     simple_collectible = get_contract("simple_collectible")
+#     tokenCount = simple_collectible.tokenCounter()
+#     tokenUri = simple_collectible.tokenURI(0)
+#     print(tokenUri)
 
 
 def main():
